@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      audionode-iframe.html
+    </title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/webaudio/resources/audit-util.js"></script>
+    <script src="/webaudio/resources/audit.js"></script>
+  </head>
+  <body>
+    <div id="description"></div>
+    <div id="console"></div>
+    <script id="layout-test-code">
+      let audit = Audit.createTaskRunner();
+
+      audit.define(
+          {label: 'audionode-iframe-test', description: 'Call a constructor from iframe page and then destroy the iframe'},
+          function(task, should) {
+            const iframe = document.createElementNS("http://www.w3.org/1999/xhtml", "iframe");
+            document.body.appendChild(iframe);
+
+            // Create AudioContext and AudioNode from iframe
+            let context = new iframe.contentWindow.AudioContext();
+            let source = context.createOscillator();
+            source.connect(context.destination);
+
+            // AudioContext should be put closed state after iframe destroyed
+            document.body.removeChild(iframe);
+
+            // Ensure context is closed after iframe destroyed
+            should(context.state, 'AudioConext should be closed').beEqualTo('closed');
+            task.done();
+          });
+
+      audit.run();
+    </script>
+  </body>
+</html>
