@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>The navigation_id Detached Iframe Page.</title>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+</head>
+
+<body>
+  <a id=link>Click me!</a>
+  <script>
+    const link = document.getElementById("link");
+    link.addEventListener("click", e => {
+      // Detach the iframe from its parent
+      console.log('iframe: click listener entered');
+      const container = window.frameElement;
+      container.remove();
+      console.log('iframe: click listener entered, container removed');
+
+      const m = performance.mark('mark-window-detached-frame');
+      console.log('iframe: click listener entered, container removed, mark name: ' + m.name + ' nav_id: ' + m.navigationId);
+    });
+    window.addEventListener("load", () => {
+      console.log('iframe: window load listener entered');
+      setTimeout(() => {
+        if (test_driver) {
+          console.log('iframe: window load listener entered, to click');
+          test_driver.click(link);
+        }
+      }, 10);
+    });
+
+  </script>
+</body>
+
+</html>
